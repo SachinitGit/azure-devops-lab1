@@ -6,5 +6,8 @@ pool:
 
 steps:
 
-- script: echo "Hello Azure DevOps Pipeline"
-  displayName: 'Run Message'
+- script: |
+    echo "Build Started"
+    ls -la
+
+  displayName: 'Display Files'
