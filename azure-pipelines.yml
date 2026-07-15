@@ -41,20 +41,25 @@ stages:
 
   jobs:
 
-  - job: DeployJob
-    displayName: 'Deploy Job'
+  - deployment: DeployProd
+    displayName: 'Deploy To Production'
 
-    steps:
-    
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        artifactName: 'website'
-        downloadPath: '$(Pipeline.Workspace)'
-      displayName: 'Download Artifact'
+    environment: prod
 
-    - task: AzureWebApp@1
-      inputs:
-        azureSubscription: 'azure-connection-lab'
-        appName: 'sachin-devops-lab-786'
-        package: '$(Pipeline.Workspace)/website'
-      displayName: 'Deploy To Azure Web App'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: 'website'
+              downloadPath: '$(Pipeline.Workspace)'
+            displayName: 'Download Artifact'
+
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: 'azure-connection-lab'
+              appName: 'sachin-devops-lab-786'
+              package: '$(Pipeline.Workspace)/website'
+            displayName: 'Deploy To Azure Web App'
