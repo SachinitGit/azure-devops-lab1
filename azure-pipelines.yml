@@ -33,3 +33,22 @@ stages:
         ArtifactName: 'website'
         publishLocation: 'Container'
       displayName: 'Publish Artifact'
+
+- stage: Deploy
+  displayName: 'Deploy Stage'
+
+  dependsOn: Build
+
+  jobs:
+
+  - job: DeployJob
+    displayName: 'Deploy Job'
+
+    steps:
+
+    - task: AzureWebApp@1
+      inputs:
+        azureSubscription: 'azure-connection-lab'
+        appName: 'sachin-devops-lab-786'
+        package: '$(Pipeline.Workspace)/website'
+      displayName: 'Deploy To Azure Web App'
