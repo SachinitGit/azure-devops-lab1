@@ -4,29 +4,32 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-steps:
+stages:
 
-- script: |
-    echo "Build Started"
-    ls -la
-  displayName: 'Display Files'
+- stage: Build
+  displayName: 'Build Stage'
 
-- task: CopyFiles@2
-  inputs:
-    Contents: 'index.html'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-  displayName: 'Copy HTML File'
+  jobs:
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'website'
-    publishLocation: 'Container'
-  displayName: 'Publish Artifact'
+  - job: BuildJob
+    displayName: 'Build Job'
 
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'azure-connection-lab'
-    appName: 'sachin-devops-lab-786'
-    package: '$(Build.ArtifactStagingDirectory)'
-  displayName: 'Deploy To Azure Web App'
+    steps:
+
+    - script: |
+        echo "Build Started"
+        ls -la
+      displayName: 'Display Files'
+
+    - task: CopyFiles@2
+      inputs:
+        Contents: 'index.html'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      displayName: 'Copy HTML File'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'website'
+        publishLocation: 'Container'
+      displayName: 'Publish Artifact'
