@@ -45,6 +45,12 @@ stages:
     displayName: 'Deploy Job'
 
     steps:
+    
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        artifactName: 'website'
+        downloadPath: '$(Pipeline.Workspace)'
+      displayName: 'Download Artifact'
 
     - task: AzureWebApp@1
       inputs:
