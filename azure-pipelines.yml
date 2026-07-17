@@ -1,6 +1,9 @@
 trigger:
 - main
 
+variables:
+- group: Lab6-Variables
+
 pool:
   vmImage: ubuntu-latest
 
@@ -15,6 +18,11 @@ stages:
     displayName: 'Build Job'
 
     steps:
+
+    - script: |
+        echo "Web App: $(WebAppName)"
+        echo "Environment: $(EnvironmentName)"
+      displayName: 'Display Variables'
 
     - script: |
         echo "Build Started"
@@ -60,6 +68,6 @@ stages:
           - task: AzureWebApp@1
             inputs:
               azureSubscription: 'azure-connection-lab'
-              appName: 'sachin-devops-lab-786'
+              appName: '$(WebAppName)'
               package: '$(Pipeline.Workspace)/website'
             displayName: 'Deploy To Azure Web App'
