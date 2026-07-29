@@ -32,7 +32,7 @@ stages:
 
     - script: |
         echo "Web App: $(WebAppName)"
-        echo "Environment: $(EnvironmentName)"
+        echo "Selected Environment: ${{ parameters.Environment }}"
       displayName: 'Display Variables'
 
     - template: build-template.yml
