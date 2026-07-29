@@ -24,10 +24,7 @@ stages:
         echo "Environment: $(EnvironmentName)"
       displayName: 'Display Variables'
 
-    - script: |
-        echo "Build Started"
-        ls -la
-      displayName: 'Display Files'
+    - template: build-template.yml
 
     - task: CopyFiles@2
       inputs:
