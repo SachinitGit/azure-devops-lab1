@@ -1,3 +1,14 @@
+parameters:
+- name: Environment
+  displayName: Environment
+  type: string
+  default: Production
+  values:
+  - Development
+  - Testing
+  - Production
+
+
 trigger:
 - main
 
