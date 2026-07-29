@@ -36,6 +36,10 @@ stages:
         echo "Lab 9 Testing"
       displayName: 'Display Variables'
 
+    ${{ if eq(parameters.Environment, 'Development') }}:
+      - script: echo "Development Environment Selected"
+        displayName: 'Development Message'
+
     - template: build-template.yml
 
     - task: CopyFiles@2
