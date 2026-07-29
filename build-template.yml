@@ -1,0 +1,6 @@
+steps:
+
+- script: |
+    echo "Build Started"
+    ls -la
+  displayName: 'Display Files'
