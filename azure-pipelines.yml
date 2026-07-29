@@ -34,10 +34,6 @@ stages:
         echo "Web App: $(WebAppName)"
         echo "Selected Environment: ${{ parameters.Environment }}"
       displayName: 'Display Variables'
-    
-    - script: echo "Development Environment Selected"
-        displayName: 'Development Message'
-        condition: eq('${{ parameters.Environment }}', 'Development')
 
     - template: build-template.yml
 
