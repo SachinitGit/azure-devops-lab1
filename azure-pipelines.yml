@@ -33,6 +33,7 @@ stages:
     - script: |
         echo "Web App: $(WebAppName)"
         echo "Selected Environment: ${{ parameters.Environment }}"
+        echo "Lab 9 Testing"
       displayName: 'Display Variables'
 
     - template: build-template.yml
