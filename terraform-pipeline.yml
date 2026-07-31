@@ -13,8 +13,14 @@ steps:
 - script: terraform version
   displayName: 'Check Terraform Version'
 
-- script: terraform init
-  workingDirectory: terraform
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'terraform-azure-connection'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    workingDirectory: 'terraform'
+    inlineScript: |
+      terraform init
   displayName: 'Terraform Init'
 
 - script: terraform validate
