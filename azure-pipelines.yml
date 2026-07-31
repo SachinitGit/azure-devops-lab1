@@ -40,6 +40,10 @@ stages:
       - script: echo "Development Environment Selected"
         displayName: 'Development Message'
 
+    - ${{ if eq(parameters.Environment, 'Production') }}:
+      - script: echo "Production Environment Selected"
+        displayName: 'Production Message'
+
     - template: build-template.yml
 
     - task: CopyFiles@2
