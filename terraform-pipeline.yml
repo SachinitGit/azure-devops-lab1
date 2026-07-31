@@ -27,6 +27,12 @@ steps:
   workingDirectory: terraform
   displayName: 'Terraform Validate'
 
-- script: terraform plan
-  workingDirectory: terraform
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'terraform-azure-connection'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    workingDirectory: 'terraform'
+    inlineScript: |
+      terraform plan
   displayName: 'Terraform Plan'
