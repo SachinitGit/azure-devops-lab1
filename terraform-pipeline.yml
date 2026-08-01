@@ -4,41 +4,84 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-steps:
+stages:
 
-- task: TerraformInstaller@1
-  inputs:
-    terraformVersion: 'latest'
+- stage: Plan
+  displayName: 'Terraform Plan Stage'
 
-- script: terraform version
-  displayName: 'Check Terraform Version'
+  jobs:
+  - job: TerraformPlan
+    displayName: 'Terraform Plan Job'
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: 'terraform-azure-connection'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    workingDirectory: 'terraform'
-    inlineScript: |
-      terraform init
-  displayName: 'Terraform Init'
+    steps:
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'
 
-- script: terraform validate
-  workingDirectory: terraform
-  displayName: 'Terraform Validate'
+    - script: terraform version
+      displayName: 'Check Terraform Version'
 
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: 'terraform-azure-connection'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    workingDirectory: 'terraform'
-    inlineScript: |
-      terraform plan -out=tfplan
-  displayName: 'Terraform Plan'
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'terraform-azure-connection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        workingDirectory: 'terraform'
+        inlineScript: |
+          terraform init
+      displayName: 'Terraform Init'
 
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: 'terraform/tfplan'
-    artifact: 'tfplan'
-  displayName: 'Publish Terraform Plan'
+    - script: terraform validate
+      workingDirectory: terraform
+      displayName: 'Terraform Validate'
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'terraform-azure-connection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        workingDirectory: 'terraform'
+        inlineScript: |
+          terraform plan -out=tfplan
+      displayName: 'Terraform Plan'
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: 'terraform/tfplan'
+        artifact: 'tfplan'
+      displayName: 'Publish Terraform Plan'
+
+
+- stage: Apply
+  displayName: 'Terraform Apply Stage'
+  dependsOn: Plan
+
+  jobs:
+  - deployment: TerraformApply
+    displayName: 'Terraform Apply Job'
+    environment: terraform-prod
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: TerraformInstaller@1
+            inputs:
+              terraformVersion: 'latest'
+
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'tfplan'
+              path: '$(Pipeline.Workspace)/tfplan'
+            displayName: 'Download Terraform Plan'
+
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: 'terraform-azure-connection'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              workingDirectory: 'terraform'
+              inlineScript: |
+                terraform init
+                terraform apply -auto-approve $(Pipeline.Workspace)/tfplan/tfplan
+            displayName: 'Terraform Apply'
