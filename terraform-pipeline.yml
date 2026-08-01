@@ -42,7 +42,7 @@ stages:
         scriptLocation: 'inlineScript'
         workingDirectory: 'terraform'
         inlineScript: |
-          terraform plan -out=tfplan
+          terraform plan -var-file=environments/dev.tfvars -out=tfplan
       displayName: 'Terraform Plan'
 
     - task: PublishPipelineArtifact@1
