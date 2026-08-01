@@ -1,7 +1,7 @@
 variable "resource_group_name" {
-  default = "rg-devops-lab"
+  type = string
 }
 
 variable "location" {
-  default = "Central India"
+  type = string
 }
