@@ -59,16 +59,60 @@ stages:
         publishLocation: 'Container'
       displayName: 'Publish Artifact'
 
-- stage: Deploy
-  displayName: 'Deploy Stage'
-
+- stage: Deploy_Dev
+  displayName: 'Deploy To Dev'
   dependsOn: Build
 
   jobs:
+  - deployment: DeployDev
+    environment: dev
 
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: 'website'
+              downloadPath: '$(Pipeline.Workspace)'
+
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: 'azure-connection-lab'
+              appName: '$(WebAppName)'
+              package: '$(Pipeline.Workspace)/website'
+
+- stage: Deploy_Test
+  displayName: 'Deploy To Test'
+  dependsOn: Deploy_Dev
+
+  jobs:
+  - deployment: DeployTest
+    environment: test
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: 'website'
+              downloadPath: '$(Pipeline.Workspace)'
+
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: 'azure-connection-lab'
+              appName: '$(WebAppName)'
+              package: '$(Pipeline.Workspace)/website'
+
+- stage: Deploy_Prod
+  displayName: 'Deploy To Prod'
+  dependsOn: Deploy_Test
+
+  jobs:
   - deployment: DeployProd
-    displayName: 'Deploy To Production'
-
     environment: prod
 
     strategy:
@@ -80,11 +124,9 @@ stages:
             inputs:
               artifactName: 'website'
               downloadPath: '$(Pipeline.Workspace)'
-            displayName: 'Download Artifact'
 
           - task: AzureWebApp@1
             inputs:
               azureSubscription: 'azure-connection-lab'
               appName: '$(WebAppName)'
               package: '$(Pipeline.Workspace)/website'
-            displayName: 'Deploy To Azure Web App'
