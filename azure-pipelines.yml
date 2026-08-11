@@ -48,7 +48,10 @@ stages:
 
     - task: CopyFiles@2
       inputs:
-        Contents: '**'
+        Contents: |
+          *.html
+          *.css
+          images/**
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
       displayName: 'Copy HTML and CSS Files'
 
